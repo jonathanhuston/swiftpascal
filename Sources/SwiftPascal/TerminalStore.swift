@@ -35,7 +35,7 @@ class TerminalStore: ObservableObject {
 
         let lines = [
             (30, 8, "Swift Pascal", UInt8(14)),
-            (19, 10, "Turbo Pascal 3.0/4.0 Interpreter", UInt8(7)),
+            (19, 10, "Pascal ca. 1987 Interpreter", UInt8(7)),
             (22, 14, "Open a .PAS file to begin", UInt8(15)),
             (24, 15, "Press Cmd+O to open file", UInt8(8)),
         ]
