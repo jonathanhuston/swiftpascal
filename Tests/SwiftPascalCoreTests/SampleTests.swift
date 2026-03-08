@@ -120,6 +120,49 @@ import Foundation
     #expect(c0.character == "Y")
 }
 
+@Test func testReadLnToArrayElement() async throws {
+    // This is the pattern from PONG.PAS SpielerName: ReadLn(Name[i])
+    let source = """
+    PROGRAM T;
+    VAR
+        Name : ARRAY [1..2] OF STRING [15];
+        i : INTEGER;
+    BEGIN
+        FOR i := 1 TO 2 DO
+            ReadLn(Name[i]);
+        Write(Name[1]);
+        Write(Name[2]);
+    END.
+    """
+    let buffer = await TerminalBuffer()
+    let interp = await Interpreter(buffer: buffer)
+    let lexer = Lexer(source: source)
+    let tokens = try lexer.tokenize()
+    let parser = Parser(tokens: tokens)
+    let program = try parser.parseProgram()
+
+    // Feed keyboard input: "Alice\r" then "Bob\r"
+    await interp.feedString("Alice")
+    await interp.feedString("Bob")
+
+    try await interp.run(program)
+
+    // After ReadLn echos + newlines, Write output starts at some position.
+    // Let's check the values were assigned by looking at what was written.
+    // The interpreter writes the input as echo, then newlines, then writes the names.
+    // Name[1] should be "Alice", Name[2] should be "Bob"
+    // Let's verify by checking the buffer content after the writes.
+    // After "Alice\n" (row 0 echo + row 1), "Bob\n" (row 1 echo + row 2),
+    // then Write("Alice") at row 2, Write("Bob") right after
+    var row2chars: [Character] = []
+    for col in 0..<8 {
+        row2chars.append(await buffer.getCell(row: 2, col: col).character)
+    }
+    let row2str = String(row2chars)
+    #expect(row2str.contains("Alice"))
+    #expect(row2str.contains("Bob"))
+}
+
 @Test func testRandomFunction() async throws {
     let source = """
     PROGRAM T;

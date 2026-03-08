@@ -170,6 +170,8 @@ public class Interpreter {
             case "REAL": return .real(0.0)
             default: return .integer(0)
             }
+        case .stringType: return .string("")
+        case .subrange: return .integer(0)
         default: return .integer(0)
         }
     }
@@ -379,27 +381,44 @@ public class Interpreter {
             }
 
             // Assign the input to variables
-            if vars.count == 1 {
-                // Determine the type and convert
-                if case .identifier(let name) = vars[0] {
-                    let existing = try environment.get(name)
-                    switch existing {
-                    case .string:
-                        try await assignTo(target: vars[0], value: .string(inputStr))
-                    case .integer:
-                        let val = Int(inputStr.trimmingCharacters(in: .whitespaces)) ?? 0
-                        try await assignTo(target: vars[0], value: .integer(val))
-                    case .char:
-                        let ch = inputStr.first ?? " "
-                        try await assignTo(target: vars[0], value: .char(ch))
-                    case .real:
-                        let val = Double(inputStr.trimmingCharacters(in: .whitespaces)) ?? 0.0
-                        try await assignTo(target: vars[0], value: .real(val))
-                    default:
-                        try await assignTo(target: vars[0], value: .string(inputStr))
-                    }
+            for target in vars {
+                let existing = try await resolveCurrentValue(target)
+                switch existing {
+                case .string:
+                    try await assignTo(target: target, value: .string(inputStr))
+                case .integer:
+                    let val = Int(inputStr.trimmingCharacters(in: .whitespaces)) ?? 0
+                    try await assignTo(target: target, value: .integer(val))
+                case .char:
+                    let ch = inputStr.first ?? " "
+                    try await assignTo(target: target, value: .char(ch))
+                case .real:
+                    let val = Double(inputStr.trimmingCharacters(in: .whitespaces)) ?? 0.0
+                    try await assignTo(target: target, value: .real(val))
+                default:
+                    try await assignTo(target: target, value: .string(inputStr))
                 }
             }
+        }
+    }
+
+    /// Resolve the current value at an expression target (to determine its type)
+    private func resolveCurrentValue(_ expr: Expression) async throws -> PascalValue {
+        switch expr {
+        case .identifier(let name):
+            return try environment.get(name)
+        case .arrayAccess(let arrayExpr, let indexExprs):
+            guard case .identifier(let name) = arrayExpr else {
+                return .string("")
+            }
+            let arr = try environment.lookupArray(name)
+            let indices = try await indexExprs.asyncMap { try await self.evalExpression($0).intValue }
+            if arr.isAbsolute && arr.absoluteSegment == 0xB800 {
+                return readVideoMemory(arr: arr, indices: indices)
+            }
+            return arr.get(indices: indices)
+        default:
+            return .string("")
         }
     }
 

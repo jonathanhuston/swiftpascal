@@ -33,14 +33,15 @@ class TerminalStore: ObservableObject {
         buffer.currentBackground = 0
         buffer.clear()
 
-        let lines = [
-            (30, 8, "Swift Pascal", UInt8(14)),
-            (19, 10, "Pascal ca. 1987 Interpreter", UInt8(7)),
-            (22, 14, "Open a .PAS file to begin", UInt8(15)),
-            (24, 15, "Press Cmd+O to open file", UInt8(8)),
+        let lines: [(String, Int, UInt8)] = [
+            ("Swift Pascal", 8, 14),
+            ("Pascal ca. 1987 Interpreter", 10, 7),
+            ("Open a .PAS file to begin", 14, 15),
+            ("Press Cmd+O to open file", 15, 8),
         ]
-        for (x, y, text, color) in lines {
-            buffer.cursorX = x
+        let cols = buffer.columns
+        for (text, y, color) in lines {
+            buffer.cursorX = (cols - text.count) / 2
             buffer.cursorY = y
             buffer.currentTextColor = color
             buffer.writeString(text)
