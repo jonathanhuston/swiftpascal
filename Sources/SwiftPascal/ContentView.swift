@@ -37,11 +37,10 @@ struct ContentView: View {
             .padding(.vertical, 6)
             .background(Color(white: 0.12))
 
-            // Terminal view — fixed 4:3 aspect ratio like a DOS monitor
+            // Terminal fills the remaining space; cells scale to fit
             TerminalView(buffer: store.buffer, onKeyPress: { key in
                 store.handleKey(key)
             })
-            .aspectRatio(CGFloat(store.buffer.columns) / CGFloat(store.buffer.rows) * 0.5, contentMode: .fit)
 
             // Error bar
             if let error = store.errorMessage {
@@ -60,7 +59,7 @@ struct ContentView: View {
                 .background(Color(white: 0.1))
             }
         }
-        .frame(width: 800, height: 520)
+        .frame(width: 800, height: 540)
         .background(.black)
     }
 }

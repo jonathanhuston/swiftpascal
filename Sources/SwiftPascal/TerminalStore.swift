@@ -100,6 +100,8 @@ class TerminalStore: ObservableObject {
                 let parser = Parser(tokens: tokens)
                 let program = try parser.parseProgram()
                 try await interpreter?.run(program)
+            } catch is CancellationError {
+                // Normal — user clicked Stop
             } catch {
                 errorMessage = "\(error)"
             }

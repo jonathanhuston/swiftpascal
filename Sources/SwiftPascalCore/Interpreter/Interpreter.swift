@@ -1,4 +1,5 @@
 import Foundation
+import AVFoundation
 
 @MainActor
 public class Interpreter {
@@ -7,7 +8,7 @@ public class Interpreter {
     private var globalEnv: Environment
     private var mockMemory: [Int: UInt8] = [:]  // For Mem[] access (BIOS area etc.)
     private var absoluteArrays: [(PascalArray, Int, Int)] = []  // (array, segment, offset)
-    private var soundFrequency: Int = 0
+    private let soundEngine = SoundEngine()
 
     // Keyboard input
     private var keyBuffer: [Character] = []
@@ -549,12 +550,12 @@ public class Interpreter {
             return true
 
         case "SOUND":
-            soundFrequency = try await evalExpression(args[0]).intValue
-            // Sound is a no-op visually — could use NSBeep for simple feedback
+            let freq = try await evalExpression(args[0]).intValue
+            soundEngine.sound(frequency: freq)
             return true
 
         case "NOSOUND":
-            soundFrequency = 0
+            soundEngine.noSound()
             return true
 
         case "CAPSLOCKAUS", "CAPSUNDNUMLOCKEEIN", "CAPSUNDNUMLOCKAUS":
