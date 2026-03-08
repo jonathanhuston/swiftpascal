@@ -8,7 +8,7 @@ A Pascal interpreter written in Swift that runs Turbo Pascal-era (ca. 1987) prog
 
 Swift Pascal is a macOS app that interprets Pascal source code from the late 1980s. It provides an 80x25 (or 40x25) character terminal with CGA 16-color graphics, simulating the DOS experience of running a Pascal program on an IBM PC.
 
-The interpreter was built specifically to run programs from the Turbo Pascal 3.0/4.0 era, including a two-player PONG game from 1987.
+The interpreter was built specifically to run programs from the Turbo Pascal era, including a two-player PONG game originally written by the developer in Turbo Pascal 3 and published in Pascal International, February 1988.
 
 ## Building
 
