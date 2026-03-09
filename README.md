@@ -108,9 +108,9 @@ swift test
 
 ## Comparison
 
-| | DOSBox (original) | Swift Pascal |
-|---|---|---|
-| ![Turbo Pascal](screenshots/turbopascal-gameplay.png) | ![Swift Pascal](screenshots/swiftpascal-gameplay.png) |
+| DOSBox (original) | Swift Pascal |
+|---|---|
+| ![DOSBox](screenshots/turbopascal-gameplay.png) | ![Swift Pascal](screenshots/swiftpascal-gameplay.png) |
 
 ## License
 
